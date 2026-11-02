@@ -1,0 +1,21 @@
+name: ia
+on: pull_request
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        env:
+          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          diff=$(gh pr diff "$PR" | head -c 100000)
+          resumen=$(jq -n --arg diff "$diff" '{model: "gpt-oss:120b", stream: false, messages: [{role: "user", content: ("Lee el PR y explica de forma sencilla que hace el PR.\n\n" + $diff)}]}' \
+            | curl -fsS https://ollama.com/api/chat -H "Authorization: Bearer $OLLAMA_API_KEY" -d @- \
+            | jq -er '.message.content') || resumen="La IA ha fallado"
+          gh pr comment "$PR" --body "$resumen"
