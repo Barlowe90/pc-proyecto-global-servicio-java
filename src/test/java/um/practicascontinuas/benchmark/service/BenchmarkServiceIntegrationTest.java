@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import um.practicascontinuas.benchmark.dto.BenchmarkRequest;
 import um.practicascontinuas.benchmark.dto.BenchmarkResponse;
 
-/** Comprueba que Spring registra MergeSort en el servicio y que se mide de verdad. */
+/** Comprueba que Spring registra los algoritmos en el servicio y que se miden de verdad. */
 @SpringBootTest
 class BenchmarkServiceIntegrationTest {
 
@@ -21,6 +21,16 @@ class BenchmarkServiceIntegrationTest {
 
     assertEquals("java", response.language());
     assertEquals("mergesort", response.algorithm());
+    assertEquals(10_000, response.size());
+    assertEquals(BenchmarkService.RUNS, response.runs());
+    assertTrue(response.timeMs() >= 0, "timeMs no puede ser negativo");
+  }
+
+  @Test
+  void quicksortEstaRegistradoYDevuelveUnTiempoValido() {
+    BenchmarkResponse response = service.benchmark(new BenchmarkRequest("quicksort", 10_000));
+
+    assertEquals("quicksort", response.algorithm());
     assertEquals(10_000, response.size());
     assertEquals(BenchmarkService.RUNS, response.runs());
     assertTrue(response.timeMs() >= 0, "timeMs no puede ser negativo");
