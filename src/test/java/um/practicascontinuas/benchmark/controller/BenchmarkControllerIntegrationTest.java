@@ -1,7 +1,7 @@
 package um.practicascontinuas.benchmark.controller;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -97,6 +97,6 @@ class BenchmarkControllerIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.algorithms").isArray())
-        .andExpect(jsonPath("$.algorithms", hasItem("mergesort")));
+        .andExpect(jsonPath("$.algorithms", hasItems("mergesort", "insertionsort")));
   }
 }

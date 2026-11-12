@@ -23,33 +23,33 @@ jobs:
       - name: Resumir PR con IA
         shell: bash
         env:
-          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number || inputs.pr_number }}
         run: |
-          if [[ -z "$OLLAMA_API_KEY" ]]; then
-            echo "::warning::Falta configurar OLLAMA_API_KEY"
+          if [[ -z "$GROQ_API_KEY" ]]; then
+            echo "::warning::Falta configurar GROQ_API_KEY"
             gh pr comment "$PR" --body "La IA ha fallado"
             exit 0
           fi
 
           # El diff de la contribución se trata como texto: no se ejecuta.
+          # El plan gratuito de Groq limita los tokens por minuto: se recorta el diff.
           diff="$(gh pr diff "$PR")"
-          diff="${diff:0:100000}"
+          diff="${diff:0:20000}"
 
           payload="$(jq -n --arg diff "$diff" '{
-            model: "gpt-oss:120b",
-            stream: false,
+            model: "openai/gpt-oss-120b",
             messages: [{
               role: "user",
               content: ("Resume los cambios de esta PR:\n\n" + $diff)
             }]
           }')"
 
-          resumen="$(curl -fsS https://ollama.com/api/chat \
-            -H "Authorization: Bearer $OLLAMA_API_KEY" \
+          resumen="$(curl -fsS https://api.groq.com/openai/v1/chat/completions \
+            -H "Authorization: Bearer $GROQ_API_KEY" \
             -H "Content-Type: application/json" \
-            -d "$payload" | jq -er '.message.content')" || resumen="La IA ha fallado"
+            -d "$payload" | jq -er '.choices[0].message.content | select(length > 0)')" || resumen="La IA ha fallado"
 
           gh pr comment "$PR" --body "$resumen"
