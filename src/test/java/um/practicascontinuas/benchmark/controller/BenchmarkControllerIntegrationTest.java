@@ -74,6 +74,15 @@ class BenchmarkControllerIntegrationTest {
   }
 
   @Test
+  void matmulRechazaTamanoSuperiorASuLimite() throws Exception {
+    postBenchmark("{\"algorithm\":\"matmul\",\"size\":1001}")
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.status").value(400))
+        .andExpect(
+            jsonPath("$.message").value("El campo 'size' para matmul debe estar entre 1 y 1000"));
+  }
+
+  @Test
   void tamanoMaximoPermitidoDevuelve200() throws Exception {
     postBenchmark("{\"algorithm\":\"mergesort\",\"size\":1000000}")
         .andExpect(status().isOk())
@@ -97,6 +106,6 @@ class BenchmarkControllerIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.algorithms").isArray())
-        .andExpect(jsonPath("$.algorithms", hasItems("mergesort", "insertionsort")));
+        .andExpect(jsonPath("$.algorithms", hasItems("mergesort", "insertionsort", "matmul")));
   }
 }

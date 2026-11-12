@@ -55,4 +55,14 @@ class BenchmarkServiceIntegrationTest {
     assertEquals(BenchmarkService.RUNS, response.runs());
     assertTrue(response.timeMs() >= 0, "timeMs no puede ser negativo");
   }
+
+  @Test
+  void matmulEstaRegistradoYDevuelveUnTiempoValido() {
+    BenchmarkResponse response = service.benchmark(new BenchmarkRequest("matmul", 100));
+
+    assertEquals("matmul", response.algorithm());
+    assertEquals(100, response.size());
+    assertEquals(BenchmarkService.RUNS, response.runs());
+    assertTrue(response.timeMs() >= 0, "timeMs no puede ser negativo");
+  }
 }
