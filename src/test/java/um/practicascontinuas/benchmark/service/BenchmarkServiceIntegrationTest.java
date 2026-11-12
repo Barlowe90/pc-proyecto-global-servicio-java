@@ -37,6 +37,16 @@ class BenchmarkServiceIntegrationTest {
   }
 
   @Test
+  void fibonacciEstaRegistradoYDevuelveUnTiempoValido() {
+    BenchmarkResponse response = service.benchmark(new BenchmarkRequest("fibonacci", 100_000));
+
+    assertEquals("fibonacci", response.algorithm());
+    assertEquals(100_000, response.size());
+    assertEquals(BenchmarkService.RUNS, response.runs());
+    assertTrue(response.timeMs() >= 0, "timeMs no puede ser negativo");
+  }
+
+  @Test
   void insertionsortEstaRegistradoYDevuelveUnTiempoValido() {
     BenchmarkResponse response = service.benchmark(new BenchmarkRequest("insertionsort", 10_000));
 
