@@ -57,6 +57,16 @@ class BenchmarkServiceIntegrationTest {
   }
 
   @Test
+  void selectionsortEstaRegistradoYDevuelveUnTiempoValido() {
+    BenchmarkResponse response = service.benchmark(new BenchmarkRequest("selectionsort", 10_000));
+
+    assertEquals("selectionsort", response.algorithm());
+    assertEquals(10_000, response.size());
+    assertEquals(BenchmarkService.RUNS, response.runs());
+    assertTrue(response.timeMs() >= 0, "timeMs no puede ser negativo");
+  }
+
+  @Test
   void matmulEstaRegistradoYDevuelveUnTiempoValido() {
     BenchmarkResponse response = service.benchmark(new BenchmarkRequest("matmul", 100));
 

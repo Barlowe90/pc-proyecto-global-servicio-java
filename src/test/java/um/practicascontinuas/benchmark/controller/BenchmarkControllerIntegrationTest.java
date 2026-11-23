@@ -106,6 +106,8 @@ class BenchmarkControllerIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.algorithms").isArray())
-        .andExpect(jsonPath("$.algorithms", hasItems("mergesort", "insertionsort", "matmul")));
+        .andExpect(
+            jsonPath(
+                "$.algorithms", hasItems("mergesort", "insertionsort", "selectionsort", "matmul")));
   }
 }
